@@ -1,0 +1,39 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  project: CollectionEntry<"portfolio">;
+}
+
+const { project } = Astro.props;
+const { title, category, categoryLabel, summary, cover, coverAlt, demoUrl } = project.data;
+---
+
+<article 
+    data-category={category}
+    class="overflow-hidden rounded-md border border-[#E7E5E4] bg-white"
+>
+  <Image
+    src={cover}
+    alt={coverAlt}
+    width={1200}
+    height={580}
+    class="h-[290px] w-full object-cover"
+  />
+  <div class="p-6">
+    <p class="text-sm font-semibold uppercase tracking-[0.12em] text-[#1E3A8A]">
+      {categoryLabel}
+    </p>
+    <h2 class="mt-3 text-[36px] font-semibold leading-[1.15] text-[#1C1917]">
+      {title}
+    </h2>
+    <p class="mt-3 text-base leading-7 text-[#78716C]">{summary}</p>
+    <a
+      href={demoUrl ?? `/portafolio/${project.id}`}
+      class="mt-6 inline-block rounded-sm border border-[#E7E5E4] px-5 py-2 text-sm font-semibold text-[#1C1917]"
+    >
+      View Demo
+    </a>
+  </div>
+</article>

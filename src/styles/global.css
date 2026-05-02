@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+:where(a, button, summary):focus-visible {
+	outline: 3px solid #E07856;
+	outline-offset: 3px;
+	border-radius: 0.25rem;
+}

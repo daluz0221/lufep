@@ -1,0 +1,40 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/layout.astro";
+import { breadcrumbListSchema } from "../../lib/structuredData";
+
+export async function getStaticPaths() {
+  const projects = (await getCollection("portfolio")) as CollectionEntry<"portfolio">[];
+  return projects.map((project: CollectionEntry<"portfolio">) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, summary, cover, coverAlt } = project.data;
+const site = Astro.site ?? Astro.url;
+const structuredData = breadcrumbListSchema(site, [
+  { name: "Inicio", path: "/" },
+  { name: "Portafolio", path: "/portafolio" },
+  { name: title, path: `/portafolio/${project.id}` },
+]);
+---
+
+<Layout
+  title={`LUFEP | ${title}`}
+  activeNav="portafolio"
+  description={summary}
+  structuredData={structuredData}
+>
+  <main class="mx-auto w-full max-w-3xl px-6 py-16">
+    <h1 class="text-[48px] font-semibold leading-tight">{title}</h1>
+    <p class="mt-4 text-base text-[#78716C]">{summary}</p>
+    <Image src={cover} alt={coverAlt} width={1200} height={600} class="mt-8 rounded-md" />
+    <article class="prose mt-10">
+      <Content />
+    </article>
+  </main>
+</Layout>

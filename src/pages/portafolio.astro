@@ -1,0 +1,129 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../layouts/layout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { breadcrumbListSchema } from "../lib/structuredData";
+
+const projects = (await getCollection("portfolio")).sort(
+	(a: CollectionEntry<"portfolio">, b: CollectionEntry<"portfolio">) =>
+		a.data.order - b.data.order,
+);
+
+const categories = [
+	{ id: "all", label: "All Projects" },
+	{ id: "legal", label: "Legal" },
+	{ id: "finance", label: "Finance" },
+	{ id: "hospitality", label: "Hospitality" },
+	{ id: "retail", label: "Retail" },
+];
+
+const site = Astro.site ?? Astro.url;
+const structuredData = breadcrumbListSchema(site, [
+	{ name: "Inicio", path: "/" },
+	{ name: "Portafolio", path: "/portafolio" },
+]);
+---
+
+<Layout
+	title="LUFEP | Portafolio"
+	activeNav="portafolio"
+	description="Explora los proyectos seleccionados del portafolio para diseño de sitios web para legal, finanzas, hospitalidad y retail."
+	structuredData={structuredData}
+>
+	<main>
+		<section class="mx-auto w-full max-w-6xl px-6 py-16">
+			<p
+				class="text-sm font-semibold uppercase tracking-[0.16em] text-[#1E3A8A]"
+			>
+				Selected Works
+			</p>
+			<h1
+				class="mt-4 text-[56px] font-semibold leading-[1.08] text-[#1C1917]"
+			>
+				Our Designs for Your Success
+			</h1>
+			<p class="mt-5 max-w-2xl text-base leading-7 text-[#78716C]">
+				We create high-performance digital environments for
+				professionals who value precision, reliability, and established
+				expertise.
+			</p>
+
+			<div
+				class="mt-10 flex flex-wrap items-center gap-5 border-b border-[#E7E5E4] pb-4 text-sm"
+				role="tablist"
+				aria-label="Filtrar por categoría"
+			>
+				{
+					categories.map((c, i) => (
+						<button
+							type="button"
+							role="tab"
+							data-filter={c.id}
+							aria-selected={i === 0 ? "true" : "false"}
+							class="border-b border-transparent pb-1 text-[#78716C] transition hover:text-[#1E3A8A] aria-selected:border-[#1E3A8A] aria-selected:font-semibold aria-selected:text-[#1E3A8A]"
+						>
+							{c.label}
+						</button>
+					))
+				}
+			</div>
+		</section>
+
+		<section
+			class="mx-auto grid w-full max-w-6xl gap-5 px-6 pb-14 md:grid-cols-2">
+			{
+				projects.map((project) => (
+					<ProjectCard project={project} />
+				))
+			}
+		</section>
+
+		<section class="mx-auto w-full max-w-6xl px-6 pb-14">
+			<div
+				class="flex flex-col items-start justify-between gap-6 rounded-md bg-[#1C1917] px-8 py-10 text-white md:flex-row md:items-center"
+			>
+				<div>
+					<h2 class="text-4xl font-semibold">
+						Ready to elevate your brand?
+					</h2>
+					<p class="mt-3 text-base text-white/80">
+						Join the professionals who trust us with their digital
+						identity.
+					</p>
+				</div>
+				<a
+					href="/contact"
+					class="rounded-sm bg-[#E07856] px-8 py-3 text-sm font-semibold text-white"
+					>Start Your Project</a
+				>
+			</div>
+		</section>
+	</main>
+	<script>
+		const tabs = document.querySelectorAll<HTMLButtonElement>("[data-filter]");
+		const cards = document.querySelectorAll<HTMLElement>("[data-category]");
+	  
+		function applyFilter(filter: string) {
+		  cards.forEach(card => {
+			const matches = filter === "all" || card.dataset.category === filter;
+			card.hidden = !matches;
+		  });
+		  tabs.forEach(tab => {
+			tab.setAttribute("aria-selected", tab.dataset.filter === filter ? "true" : "false");
+		  });
+		}
+	  
+		tabs.forEach(tab => {
+		  tab.addEventListener("click", () => {
+			const filter = tab.dataset.filter ?? "all";
+			applyFilter(filter);
+			history.replaceState(null, "", filter === "all" ? "/portafolio" : `/portafolio#${filter}`);
+		  });
+		});
+	  
+		const initial = window.location.hash.replace("#", "");
+		if (initial && [...tabs].some(t => t.dataset.filter === initial)) {
+		  applyFilter(initial);
+		}
+	  </script>
+</Layout>

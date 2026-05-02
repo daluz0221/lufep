@@ -1,0 +1,88 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/layout.astro";
+import type { CollectionEntry } from "astro:content";
+import ServiceCard from "../components/ServiceCard.astro";
+import {
+	breadcrumbListSchema,
+	servicesPageSchema,
+} from "../lib/structuredData";
+
+const services = (await getCollection("services")).sort(
+  (a: CollectionEntry<"services">, b: CollectionEntry<"services">) =>
+    a.data.order - b.data.order,
+);
+
+const site = Astro.site ?? Astro.url;
+const structuredData = [
+	servicesPageSchema(site, services),
+	breadcrumbListSchema(site, [
+		{ name: "Inicio", path: "/" },
+		{ name: "Servicios", path: "/services" },
+	]),
+];
+---
+
+<Layout
+	title="LUFEP | Servicios"
+	activeNav="services"
+	description="Explora los servicios de desarrollo web construidos para profesionales, desde sitios de presencia simples hasta experiencias interactivas avanzadas."
+	structuredData={structuredData}
+>
+	<main>
+		<section class="border-b border-[#E7E5E4]">
+			<div class="mx-auto w-full max-w-6xl px-6 py-18 text-center">
+				<p class="text-sm font-semibold uppercase tracking-[0.16em] text-[#1E3A8A]">Web Development Services</p>
+				<h1 class="mt-4 text-[52px] font-semibold leading-[1.12] text-[#1C1917]">Simple. Effective Web Solutions</h1>
+				<p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#78716C]">
+					High-performance, architecture-driven websites tailored for professionals who value
+					precision, stability, and quiet authority.
+				</p>
+				<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+					<a href="/portafolio" class="rounded-sm bg-[#1E3A8A] px-7 py-3 text-sm font-semibold text-white">View Projects</a>
+					<a href="/contact" class="rounded-sm border border-[#E7E5E4] bg-white px-7 py-3 text-sm font-semibold text-[#1C1917]">Learn Process</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="mx-auto grid w-full max-w-6xl gap-5 px-6 py-14 md:grid-cols-3">
+			{services.map(service => <ServiceCard service={service} />)}
+		</section>
+
+		<section class="mx-auto grid w-full max-w-6xl gap-10 px-6 pb-16 md:grid-cols-2 md:items-center">
+			<img
+				src="https://images.unsplash.com/photo-1486946255434-2466348c2166?auto=format&fit=crop&w=1200&q=80"
+				alt="Escritorio minimalista"
+				class="h-[360px] w-full rounded-md object-cover"
+			/>
+			<div>
+				<h2 class="text-[48px] font-semibold leading-[1.15] text-[#1C1917]">Engineered for Simplicity</h2>
+				<div class="mt-6 space-y-4">
+					<div class="rounded-md border border-[#E7E5E4] bg-white p-4">
+						<h3 class="font-semibold text-[#1C1917]">No Database Overhead</h3>
+						<p class="mt-2 text-base leading-7 text-[#78716C]">
+							We use static architecture for blazing fast load times and reduced complexity.
+						</p>
+					</div>
+					<div class="rounded-md border border-[#E7E5E4] bg-white p-4">
+						<h3 class="font-semibold text-[#1C1917]">Simple Setup</h3>
+						<p class="mt-2 text-base leading-7 text-[#78716C]">
+							A linear launch process that requires minimal technical input from your team.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="bg-[#1C1917]">
+			<div class="mx-auto w-full max-w-6xl px-6 py-16 text-center text-white">
+				<h2 class="text-4xl font-semibold">Ready to define your digital authority?</h2>
+				<p class="mx-auto mt-4 max-w-2xl text-base text-white/80">
+					Contact us for a tailored consultation where we align development expertise with your
+					business objectives.
+				</p>
+				<a href="/contact" class="mt-8 inline-block rounded-sm bg-[#E07856] px-10 py-3 text-sm font-semibold text-white">Download Brochure</a>
+			</div>
+		</section>
+	</main>
+</Layout>

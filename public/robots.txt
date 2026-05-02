@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://devportfolio.tech/sitemap-index.xml
